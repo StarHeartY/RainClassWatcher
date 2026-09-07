@@ -50,3 +50,6 @@ packages/
 # OS metadata
 Thumbs.db
 Desktop.ini
+
+# Visual Studio / WAP generated cache
+*.assets.cache
