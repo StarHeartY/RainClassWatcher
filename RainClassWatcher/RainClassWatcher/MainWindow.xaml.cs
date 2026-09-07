@@ -155,6 +155,20 @@ namespace RainClassWatcher
             builder.AppendLine($"页码：{latest.Page}");
             builder.AppendLine($"时间：{latest.Time}");
             builder.AppendLine($"状态：{latest.Status}");
+            builder.AppendLine();
+
+            bool isNewExercise =
+                latest.Time == "刚刚" &&
+                (latest.Status == "未完成" || latest.Status == "未作答");
+
+            if (isNewExercise)
+            {
+                builder.AppendLine("🚨 判定：发现新的未作答题目！");
+            }
+            else
+            {
+                builder.AppendLine("✓ 判定：暂无新题");
+            }
 
             return builder.ToString();
         }
