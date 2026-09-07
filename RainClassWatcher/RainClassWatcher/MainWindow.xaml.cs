@@ -13,6 +13,8 @@ namespace RainClassWatcher
 
         private readonly NewExerciseDetector _newExerciseDetector = new();
 
+        private readonly NotificationService _notificationService = new();
+
         private readonly RainClassPollingService _pollingService;
 
         public MainWindow()
@@ -70,10 +72,17 @@ namespace RainClassWatcher
             OutputBox.Text = "监控已停止。";
         }
 
-        private void OnScanCompleted(RainClassScanResult result)
+        private void OnScanCompleted(
+    RainClassScanResult result)
         {
             bool shouldNotify =
                 _newExerciseDetector.ShouldNotify(result);
+
+            if (shouldNotify && result.Latest is not null)
+            {
+                _notificationService.NotifyNewExercise(
+                    result.Latest.Page);
+            }
 
             DispatcherQueue.TryEnqueue(() =>
             {
