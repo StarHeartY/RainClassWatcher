@@ -6,12 +6,14 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:systemai="http://schemas.microsoft.com/appx/manifest/systemai/windows10"
-  IgnorableNamespaces="uap rescap systemai">
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap rescap systemai com desktop">
 
   <Identity
     Name="c25ea5ee-dba5-4aba-ba15-0da4fb0b41a0"
     Publisher="CN=yirui"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="c25ea5ee-dba5-4aba-ba15-0da4fb0b41a0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -43,6 +45,20 @@
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <desktop:Extension Category="windows.toastNotificationActivation">
+          <desktop:ToastNotificationActivation ToastActivatorCLSID="4A0F739C-3EAC-4EC3-9E02-7F44B37AD696" />
+        </desktop:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="RainClassWatcher\RainClassWatcher.exe"
+                           Arguments="----AppNotificationActivated:"
+                           DisplayName="RainClassWatcher">
+              <com:Class Id="4A0F739C-3EAC-4EC3-9E02-7F44B37AD696" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

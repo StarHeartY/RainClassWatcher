@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.AppNotifications;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
@@ -35,6 +36,15 @@ namespace RainClassWatcher
         public App()
         {
             InitializeComponent();
+            AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
+            AppNotificationManager.Default.Register();
+        }
+
+        private void OnNotificationInvoked(
+            AppNotificationManager sender,
+            AppNotificationActivatedEventArgs args)
+        {
+            _window?.DispatcherQueue.TryEnqueue(() => _window?.Activate());
         }
 
         /// <summary>
@@ -44,6 +54,11 @@ namespace RainClassWatcher
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
+            _window.Closed += (_, _) =>
+            {
+                AppNotificationManager.Default.Unregister();
+                AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
+            };
             _window.Activate();
         }
     }
