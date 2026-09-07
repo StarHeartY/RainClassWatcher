@@ -1,31 +1,77 @@
+using FlaUI.Core.Definitions;
+using FlaUI.UIA3;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RainClassWatcher
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private async void ReadRainClass_Click(object sender, RoutedEventArgs e)
+        {
+            OutputBox.Text = "正在读取雨课堂……";
+
+            try
+            {
+                string result = await Task.Run(ReadRainClassUi);
+                OutputBox.Text = result;
+            }
+            catch (Exception ex)
+            {
+                OutputBox.Text = $"读取失败：{ex}";
+            }
+        }
+
+        private static string ReadRainClassUi()
+        {
+            using var automation = new UIA3Automation();
+
+            var desktop = automation.GetDesktop();
+
+            var rainWindow = desktop
+                .FindAllChildren(condition =>
+                    condition.ByControlType(ControlType.Window))
+                .FirstOrDefault(element =>
+                    element.Name?.Contains(
+                        "雨课堂",
+                        StringComparison.OrdinalIgnoreCase) == true);
+
+            if (rainWindow is null)
+            {
+                return "没有找到雨课堂窗口。";
+            }
+
+            var builder = new StringBuilder();
+
+            builder.AppendLine($"找到窗口：{rainWindow.Name}");
+            builder.AppendLine();
+            builder.AppendLine("检测到的文本：");
+            builder.AppendLine("--------------------------------");
+
+            var textElements = rainWindow.FindAllDescendants(condition =>
+                condition.ByControlType(ControlType.Text));
+
+            foreach (var element in textElements)
+            {
+                string name = element.Name;
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue;
+                }
+
+                builder.AppendLine(name);
+            }
+
+            return builder.ToString();
         }
     }
 }
